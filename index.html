@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Literário</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #logo {
+            margin-bottom: 0px;
+        }
+        #logo img {
+            max-width: 300px;
+            height: auto;
+        }
+        #resposta {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            width: 80%;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #question {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .options-container {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-content: center;
+        }
+        .option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #f2f7f9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background-color 0.3s, border 0.3s;
+        }
+        .option:hover {
+            background-color: #e0e7ea;
+        }
+        .option.selected {
+            background-color: #3498db;
+            color: #ffffff;
+            border: 2px solid #2980b9;
+        }
+        .key-info {
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+        .key-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        .key-info li {
+            margin-bottom: 10px;
+        }
+        #hint {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #d0e9c6;
+            border-radius: 5px;
+            width: 80%;
+            text-align: left;
+            font-size: 25px;
+            color: #3c763d;
+        }
+        #hint.error {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="logo">
+            <img src="/images/logo-ctrlplay.png" alt="Logo">
+        </div>
+        <h1>Quiz Literário</h1>
+        <div id="resposta">
+            <div id="question">Pressione uma tecla ou clique para ver a pergunta.</div>
+            <div class="options-container" id="optionsContainer">
+                <!-- As opções de resposta serão geradas aqui -->
+            </div>
+        </div>
+        
+        <div id="hint"></div>
+
+        <div class="key-info">
+            <h2>Controles da Makey Makey</h2>
+            <ul>
+                <li><strong>Clique do Mouse:</strong> Envia a resposta selecionada.</li>
+                <li><strong>Tecla Espaço:</strong> Mostrar uma dica sobre a pergunta atual.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            { 
+                question: 'Qual é o nome do livro famoso com um menino que vive em um armário debaixo da escada?', 
+                answer: 'Harry Potter', 
+                options: [
+                    { text: 'O Mágico de Oz' }, 
+                    { text: 'O Senhor dos Anéis' }, 
+                    { text: 'Harry Potter' }, 
+                    { text: 'O Hobbit' }
+                ], 
+                hint: 'É sobre um jovem bruxo de Hogwarts' 
+            },
+            { 
+                question: 'Quem é o famoso detetive que usa um chapéu de caçador e uma lupa?', 
+                answer: 'Sherlock Holmes', 
+                options: [
+                    { text: 'Miss Marple' }, 
+                    { text: 'Sherlock Holmes' }, 
+                    { text: 'Hercule Poirot' }, 
+                    { text: 'Nancy Drew' }
+                ], 
+                hint: 'Ele vive em Londres.' 
+            },
+            { 
+                question: 'Qual é o nome do ratinho que vive em Nova Iorque e tem um irmão chamado George?', 
+                answer: 'Stuart Little', 
+                options: [
+                    { text: 'Mickey Mouse' }, 
+                    { text: 'Ratatouille' }, 
+                    { text: 'Gerald' }, 
+                    { text: 'Stuart Little' }
+                ], 
+                hint: 'Ele tem varios filmes, tem um carro e pilota um avião.' 
+            },
+            { 
+                question: 'Qual é o nome do garoto que tem um anel mágico e luta contra um vilão sombrio?', 
+                answer: 'Frodo', 
+                options: [
+                    { text: 'Frodo' }, 
+                    { text: 'Harry Potter' }, 
+                    { text: 'Percy Jackson' }, 
+                    { text: 'Aragorn' }
+                ], 
+                hint: 'Ele é o protagonista de uma famosa trilogia.' 
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "livro"?',
+                answer: 'Book',
+                options: [
+                    { text: 'Notebook' },
+                    { text: 'Book' },
+                    { text: 'Pen' },
+                    { text: 'Table' }
+                ],
+                hint: 'Você lê isso para aprender ou se entreter.'
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "biblioteca"?',
+                answer: 'Library',
+                options: [
+                    { text: 'Library' },
+                    { text: 'Classroom' },
+                    { text: 'Office' },
+                    { text: 'Shop' }
+                ],
+                hint: 'Lugar onde você pode emprestar livros.'
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "estante"?',
+                answer: 'Shelf',
+                options: [
+                    { text: 'Table' },
+                    { text: 'Drawer' },
+                    { text: 'Shelf' },
+                    { text: 'Chair' }
+                ],
+                hint: 'Usado para guardar livros ou objetos.'
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "caneta"?',
+                answer: 'Pen',
+                options: [
+                    { text: 'Eraser' },
+                    { text: 'Pencil' },
+                    { text: 'Book' },
+                    { text: 'Pen' }
+                ],
+                hint: 'Usado para escrever.'
+            },
+            { 
+                question: 'Qual é o nome em inglês do lugar onde você vai para estudar e ler livros?',
+                answer: 'Library',
+                options: [
+                    { text: 'Library' },
+                    { text: 'School' },
+                    { text: 'Kitchen' },
+                    { text: 'Playground' }
+                ],
+                hint: 'Lugar onde você pode pegar livros emprestados.'
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "caderno"?',
+                answer: 'Notebook',
+                options: [
+                    { text: 'Binder' },
+                    { text: 'Notebook' },
+                    { text: 'Folder' },
+                    { text: 'Ruler' }
+                ],
+                hint: 'Usado para escrever anotações.'
+            },
+            { 
+                question: 'Qual é o nome em inglês do objeto que usamos para escrever em uma lousa?',
+                answer: 'Marker',
+                options: [
+                    { text: 'Marker' },
+                    { text: 'Chalk' },
+                    { text: 'Paintbrush' },
+                    { text: 'Crayon' }
+                ],
+                hint: 'Usado para escrever em uma lousa branca.'
+            },
+            { 
+                question: 'Qual é a palavra em inglês para "mesa"?',
+                answer: 'Table',
+                options: [
+                    { text: 'Chair' },
+                    { text: 'Table' },
+                    { text: 'Desk' },
+                    { text: 'Couch' }
+                ],
+                hint: 'Você usa isso para comer ou estudar.'
+            }
+        ];
+
+        let currentIndex = 0;
+        let selectedOption = null;
+
+        function setQuestion(index) {
+            const question = questions[index];
+            document.getElementById('question').innerText = question.question;
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = ''; // Limpa opções anteriores
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.innerText = option.text;
+                optionElement.dataset.index = i;
+                optionElement.addEventListener('click', () => selectOption(i));
+                optionsContainer.appendChild(optionElement);
+            });
+            document.getElementById('hint').innerText = ''; // Limpa dica anterior
+            document.getElementById('hint').classList.remove('error');
+            selectedOption = null;
+        }
+
+        function selectOption(index) {
+            selectedOption = index;
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) {
+                document.getElementById('hint').innerText = 'Por favor, selecione uma opção.';
+                document.getElementById('hint').classList.add('error');
+                return;
+            }
+
+            const correctAnswer = questions[currentIndex].answer.toLowerCase();
+            const selectedAnswer = questions[currentIndex].options[selectedOption]?.text.toLowerCase();
+            
+            if (selectedAnswer === correctAnswer) {
+                document.getElementById('hint').innerText = 'Resposta correta!';
+                document.getElementById('hint').style.backgroundColor = '#dff0d8';
+                document.getElementById('hint').style.borderColor = '#d0e9c6';
+                document.getElementById('hint').style.color = '#3c763d';
+                // Avançar para a próxima pergunta após um atraso
+                setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % questions.length;
+                    setQuestion(currentIndex);
+                }, 1000); // Ajuste o tempo conforme necessário
+            } else {
+                document.getElementById('hint').innerText = 'Resposta errada. Tente novamente.';
+                document.getElementById('hint').style.backgroundColor = '#f2dede';
+                document.getElementById('hint').style.borderColor = '#ebccd1';
+                document.getElementById('hint').style.color = '#a94442';
+            }
+        }
+
+        function showHint() {
+            document.getElementById('hint').innerText = questions[currentIndex].hint;
+            document.getElementById('hint').classList.remove('error');
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') {
+                selectOption(0);
+            } else if (event.key === 'ArrowDown') {
+                selectOption(1);
+            } else if (event.key === 'ArrowLeft') {
+                selectOption(2);
+            } else if (event.key === 'ArrowRight') {
+                selectOption(3);
+            } else if (event.key === ' ') {
+                showHint();
+            }
+        });
+
+        document.addEventListener('click', () => {
+            submitAnswer();
+        });
+
+        // Inicializa o quiz com a primeira pergunta
+        setQuestion(currentIndex);
+    </script>
+</body>
+</html>
